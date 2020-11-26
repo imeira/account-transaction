@@ -6,6 +6,7 @@ import com.imeira.account.transaction.domain.Transaction;
 import com.imeira.account.transaction.dto.OperationTypeDTO;
 import com.imeira.account.transaction.dto.TransactionDTO;
 import com.imeira.account.transaction.repository.TransactionRepository;
+import com.imeira.account.transaction.service.exception.InvalidTransactionException;
 import com.imeira.account.transaction.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,16 +60,23 @@ public class TransactionService {
 
     public TransactionDTO create(TransactionDTO transactionDTO) {
 
-        Objects.requireNonNull(accountService.findById(transactionDTO.getAccountId()), String.format("Conta inválida!"));
-        Objects.requireNonNull(transactionDTO.getAmount(), String.format("Amount inválido!"));
+        try {
 
-        OperationTypeDTO operationTypeDTO = operationTypeService.findById(transactionDTO.getOperationTypeId());
-        Objects.requireNonNull(operationTypeDTO, String.format("Tipo de operação inválida!"));
-        if (operationTypeDTO.isNegative()) {
-            transactionDTO.setAmount(transactionDTO.getAmount().multiply(BigDecimal.valueOf(-1)));
+            Objects.requireNonNull(accountService.findById(transactionDTO.getAccountId()), String.format("Conta inválida!"));
+            Objects.requireNonNull(transactionDTO.getAmount(), String.format("Amount inválido!"));
+
+            OperationTypeDTO operationTypeDTO = operationTypeService.findById(transactionDTO.getOperationTypeId());
+            Objects.requireNonNull(operationTypeDTO, String.format("Tipo de operação inválida!"));
+            if (operationTypeDTO.isNegative()) {
+                transactionDTO.setAmount(transactionDTO.getAmount().multiply(BigDecimal.valueOf(-1)));
+            }
+            
+            transactionDTO = fromEntity(transactionRepository.save(fromDTO(transactionDTO)));
+
+        } catch (Exception e) {
+            throw new InvalidTransactionException(e.getMessage());
         }
-
-        return fromEntity(transactionRepository.save(fromDTO(transactionDTO)));
+        return transactionDTO;
     }
 
 
