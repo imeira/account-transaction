@@ -20,6 +20,6 @@ public class OperationType implements Serializable {
 
   private String description;
 
-  private boolean negative = false;
+  private boolean negative;
 
 }

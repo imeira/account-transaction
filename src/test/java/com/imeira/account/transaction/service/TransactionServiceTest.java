@@ -4,6 +4,7 @@ import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.domain.OperationType;
 import com.imeira.account.transaction.domain.Transaction;
 import com.imeira.account.transaction.dto.AccountDTO;
+import com.imeira.account.transaction.dto.OperationTypeDTO;
 import com.imeira.account.transaction.dto.TransactionDTO;
 import com.imeira.account.transaction.repository.TransactionRepository;
 import org.junit.jupiter.api.Assertions;
@@ -31,6 +32,9 @@ class TransactionServiceTest {
 
     @Mock
     AccountService accountService;
+
+    @Mock
+    OperationTypeService operationTypeService;
 
     @BeforeEach
     void setUp() {
@@ -65,6 +69,7 @@ class TransactionServiceTest {
     @Test
     void testCreate() {
         when(accountService.findById(any())).thenReturn(new AccountDTO(BigInteger.valueOf(1), "documentNumber"));
+        when(operationTypeService.findById(any())).thenReturn(new OperationTypeDTO(BigInteger.valueOf(1), "COMPRA A VISTA", true));
         when(transactionRepository.save(any())).thenReturn(new Transaction(BigInteger.valueOf(1), new Account(BigInteger.valueOf(1), "documentNumber"), new OperationType(BigInteger.valueOf(1), "description", true), new BigDecimal(0), LocalDateTime.of(2020, Month.NOVEMBER, 25, 21, 13, 37)));
 
 

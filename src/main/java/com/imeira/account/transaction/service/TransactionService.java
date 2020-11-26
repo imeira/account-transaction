@@ -3,15 +3,17 @@ package com.imeira.account.transaction.service;
 import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.domain.OperationType;
 import com.imeira.account.transaction.domain.Transaction;
-import com.imeira.account.transaction.dto.AccountDTO;
+import com.imeira.account.transaction.dto.OperationTypeDTO;
 import com.imeira.account.transaction.dto.TransactionDTO;
 import com.imeira.account.transaction.repository.TransactionRepository;
 import com.imeira.account.transaction.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,12 @@ public class TransactionService {
 
     public TransactionDTO findById(BigInteger id) {
         Optional<Transaction> obj = transactionRepository.findById(id);
-        return obj.map(this::fromEntity).orElseThrow(() -> new ObjectNotFoundException("Transacao não encontrada!"));
+        return obj.map(this::fromEntity).orElseThrow(() -> new ObjectNotFoundException("Transação não encontrada!"));
+    }
+
+    public List<TransactionDTO> find(Account account) {
+        Optional<List<Transaction>> all = transactionRepository.findByAccount(account);
+        return fromEntity(all.orElseThrow(() -> new ObjectNotFoundException("Transação não encontrada por conta!")));
     }
 
 
@@ -51,10 +58,16 @@ public class TransactionService {
 
 
     public TransactionDTO create(TransactionDTO transactionDTO) {
-        AccountDTO obj = accountService.findById(transactionDTO.getAccountId());
-        if (obj == null) {
-            throw new ObjectNotFoundException(String.format("Conta nao encontrada!"));
+
+        Objects.requireNonNull(accountService.findById(transactionDTO.getAccountId()), String.format("Conta inválida!"));
+        Objects.requireNonNull(transactionDTO.getAmount(), String.format("Amount inválido!"));
+
+        OperationTypeDTO operationTypeDTO = operationTypeService.findById(transactionDTO.getOperationTypeId());
+        Objects.requireNonNull(operationTypeDTO, String.format("Tipo de operação inválida!"));
+        if (operationTypeDTO.isNegative()) {
+            transactionDTO.setAmount(transactionDTO.getAmount().multiply(BigDecimal.valueOf(-1)));
         }
+
         return fromEntity(transactionRepository.save(fromDTO(transactionDTO)));
     }
 

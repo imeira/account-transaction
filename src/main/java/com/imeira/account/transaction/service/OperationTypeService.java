@@ -48,7 +48,7 @@ public class OperationTypeService {
     public OperationTypeDTO create(OperationTypeDTO operationTypeDTO) {
         Optional<OperationType> obj = operationTypeRepository.findByDescription(operationTypeDTO.getDescription());
         if (obj.isPresent()) {
-            throw new ObjectAlreadyExistException(String.format("Já extiste um tipo de operação com essa descrição"));
+            throw new ObjectAlreadyExistException(String.format("Já existe um tipo de operação com essa descrição!"));
         }
         return fromEntity(operationTypeRepository.save(fromDTO(operationTypeDTO)));
     }
@@ -57,6 +57,7 @@ public class OperationTypeService {
         return OperationTypeDTO.builder()
                 .id(operationType.getId())
                 .description(operationType.getDescription())
+                .negative(operationType.isNegative())
                 .build();
     }
 
@@ -64,6 +65,7 @@ public class OperationTypeService {
         return OperationType.builder()
                 .id(operationTypeDTO.getId())
                 .description(operationTypeDTO.getDescription())
+                .negative(operationTypeDTO.isNegative())
                 .build();
     }
 

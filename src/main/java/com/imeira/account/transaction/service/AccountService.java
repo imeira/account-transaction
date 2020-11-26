@@ -21,7 +21,7 @@ public class AccountService {
 
     public  AccountDTO findById(BigInteger id) {
         Optional<Account> obj = accountRepository.findById(id);
-        return obj.map(this::fromEntity).orElseThrow(() -> new ObjectNotFoundException("BigInteger!"));
+        return obj.map(this::fromEntity).orElseThrow(() -> new ObjectNotFoundException("Conta nao encontrada!"));
     }
 
     public Account createIfNotFound(Account account) {
@@ -42,7 +42,7 @@ public class AccountService {
     public AccountDTO create(AccountDTO accountDTO) {
         Optional<Account> obj = accountRepository.findByDocumentNumber(accountDTO.getDocumentNumber());
         if (obj.isPresent()) {
-            throw new ObjectAlreadyExistException(String.format("Já extiste uma conta com esse de documento"));
+            throw new ObjectAlreadyExistException(String.format("Já existe uma conta com esse de documento!"));
         }
         return fromEntity(accountRepository.save(fromDTO(accountDTO)));
     }
