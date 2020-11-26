@@ -3,8 +3,10 @@ package com.imeira.account.transaction.service;
 import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.domain.OperationType;
 import com.imeira.account.transaction.domain.Transaction;
+import com.imeira.account.transaction.dto.AccountDTO;
 import com.imeira.account.transaction.dto.TransactionDTO;
 import com.imeira.account.transaction.repository.TransactionRepository;
+import com.imeira.account.transaction.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +21,21 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    OperationTypeService operationTypeService;
+
+    @Autowired
+    AccountService accountService;
+
+
+
     public void deleteAll() {
         transactionRepository.deleteAll();
     }
 
     public TransactionDTO findById(BigInteger id) {
-        Optional<Transaction> transaction = transactionRepository.findById(id);
-        return transaction.map(this::fromEntity).orElse(null);
+        Optional<Transaction> obj = transactionRepository.findById(id);
+        return obj.map(this::fromEntity).orElseThrow(() -> new ObjectNotFoundException("Transacao não encontrada!"));
     }
 
 
@@ -41,6 +51,10 @@ public class TransactionService {
 
 
     public TransactionDTO create(TransactionDTO transactionDTO) {
+        AccountDTO obj = accountService.findById(transactionDTO.getAccountId());
+        if (obj == null) {
+            throw new ObjectNotFoundException(String.format("Conta nao encontrada!"));
+        }
         return fromEntity(transactionRepository.save(fromDTO(transactionDTO)));
     }
 

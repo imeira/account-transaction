@@ -3,6 +3,7 @@ package com.imeira.account.transaction.service;
 import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.domain.OperationType;
 import com.imeira.account.transaction.domain.Transaction;
+import com.imeira.account.transaction.dto.AccountDTO;
 import com.imeira.account.transaction.dto.TransactionDTO;
 import com.imeira.account.transaction.repository.TransactionRepository;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +18,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
@@ -26,6 +28,9 @@ class TransactionServiceTest {
     TransactionRepository transactionRepository;
     @InjectMocks
     TransactionService transactionService;
+
+    @Mock
+    AccountService accountService;
 
     @BeforeEach
     void setUp() {
@@ -39,8 +44,10 @@ class TransactionServiceTest {
 
     @Test
     void testFindById() {
+        when(transactionRepository.findById(any())).thenReturn(Optional.of(new Transaction(BigInteger.valueOf(1), new Account(BigInteger.valueOf(1), "documentNumber"), new OperationType(BigInteger.valueOf(1), "description", true), new BigDecimal(0), LocalDateTime.of(2020, Month.NOVEMBER, 25, 21, 13, 37))));
+
         TransactionDTO result = transactionService.findById(BigInteger.valueOf(1));
-        Assertions.assertNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test
@@ -57,7 +64,9 @@ class TransactionServiceTest {
 
     @Test
     void testCreate() {
+        when(accountService.findById(any())).thenReturn(new AccountDTO(BigInteger.valueOf(1), "documentNumber"));
         when(transactionRepository.save(any())).thenReturn(new Transaction(BigInteger.valueOf(1), new Account(BigInteger.valueOf(1), "documentNumber"), new OperationType(BigInteger.valueOf(1), "description", true), new BigDecimal(0), LocalDateTime.of(2020, Month.NOVEMBER, 25, 21, 13, 37)));
+
 
         TransactionDTO result = transactionService.create(new TransactionDTO(BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(1), new BigDecimal(0), LocalDateTime.of(2020, Month.NOVEMBER, 25, 21, 13, 37)));
         Assertions.assertNotNull(result);

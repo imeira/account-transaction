@@ -3,6 +3,8 @@ package com.imeira.account.transaction.service;
 import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.dto.AccountDTO;
 import com.imeira.account.transaction.repository.AccountRepository;
+import com.imeira.account.transaction.service.exception.ObjectAlreadyExistException;
+import com.imeira.account.transaction.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +20,8 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     public  AccountDTO findById(BigInteger id) {
-        Optional<Account> account = accountRepository.findById(id);
-        return account.map(this::fromEntity).orElse(null);
+        Optional<Account> obj = accountRepository.findById(id);
+        return obj.map(this::fromEntity).orElseThrow(() -> new ObjectNotFoundException("BigInteger!"));
     }
 
     public Account createIfNotFound(Account account) {
@@ -38,6 +40,10 @@ public class AccountService {
 
 
     public AccountDTO create(AccountDTO accountDTO) {
+        Optional<Account> obj = accountRepository.findByDocumentNumber(accountDTO.getDocumentNumber());
+        if (obj.isPresent()) {
+            throw new ObjectAlreadyExistException(String.format("Já extiste uma conta com esse de documento"));
+        }
         return fromEntity(accountRepository.save(fromDTO(accountDTO)));
     }
 

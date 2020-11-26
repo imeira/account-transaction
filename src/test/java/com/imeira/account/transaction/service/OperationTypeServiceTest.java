@@ -1,5 +1,6 @@
 package com.imeira.account.transaction.service;
 
+import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.domain.OperationType;
 import com.imeira.account.transaction.dto.OperationTypeDTO;
 import com.imeira.account.transaction.repository.OperationTypeRepository;
@@ -35,8 +36,10 @@ class OperationTypeServiceTest {
 
     @Test
     void testFindById() {
+        when(operationTypeRepository.findById(any())).thenReturn(Optional.of(new OperationType()));
+
         OperationTypeDTO result = operationTypeService.findById(BigInteger.valueOf(1));
-        Assertions.assertNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test

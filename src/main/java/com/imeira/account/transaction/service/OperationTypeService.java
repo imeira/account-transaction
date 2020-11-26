@@ -3,6 +3,8 @@ package com.imeira.account.transaction.service;
 import com.imeira.account.transaction.domain.OperationType;
 import com.imeira.account.transaction.dto.OperationTypeDTO;
 import com.imeira.account.transaction.repository.OperationTypeRepository;
+import com.imeira.account.transaction.service.exception.ObjectAlreadyExistException;
+import com.imeira.account.transaction.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +25,8 @@ public class OperationTypeService {
     }
 
     public OperationTypeDTO findById(BigInteger id) {
-        Optional<OperationType> operationType = operationTypeRepository.findById(id);
-        return operationType.map(this::fromEntity).orElse(null);
+        Optional<OperationType> obj = operationTypeRepository.findById(id);
+        return obj.map(this::fromEntity).orElseThrow(() -> new ObjectNotFoundException("Tipo de operação não encontrado!"));
     }
 
 
@@ -34,8 +36,8 @@ public class OperationTypeService {
     }
 
     public OperationTypeDTO findByDescription(String description) {
-        Optional<OperationType> operationType = operationTypeRepository.findByDescription(description);
-        return operationType.map(this::fromEntity).orElse(null);
+        Optional<OperationType> obj = operationTypeRepository.findByDescription(description);
+        return obj.map(this::fromEntity).orElse(null);
     }
 
     public OperationType createIfNotFound(OperationType operationType) {
@@ -44,6 +46,10 @@ public class OperationTypeService {
     }
 
     public OperationTypeDTO create(OperationTypeDTO operationTypeDTO) {
+        Optional<OperationType> obj = operationTypeRepository.findByDescription(operationTypeDTO.getDescription());
+        if (obj.isPresent()) {
+            throw new ObjectAlreadyExistException(String.format("Já extiste um tipo de operação com essa descrição"));
+        }
         return fromEntity(operationTypeRepository.save(fromDTO(operationTypeDTO)));
     }
 

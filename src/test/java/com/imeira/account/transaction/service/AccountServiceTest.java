@@ -32,8 +32,10 @@ class AccountServiceTest {
 
     @Test
     void testFindById() {
+        when(accountRepository.findById(any())).thenReturn(Optional.of(new Account()));
+
         AccountDTO result = accountService.findById(BigInteger.valueOf(1));
-        Assertions.assertNull(result);
+        Assertions.assertNotNull(result);
     }
 
     @Test
