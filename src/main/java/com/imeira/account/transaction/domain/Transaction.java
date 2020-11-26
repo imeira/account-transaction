@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Document
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public final class Transaction implements Serializable {
 
   @Id
-  private Long id;
+  private BigInteger id;
 
   @DBRef
   private Account account;

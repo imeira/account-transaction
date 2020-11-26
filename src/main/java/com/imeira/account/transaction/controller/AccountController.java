@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -35,7 +36,7 @@ public class AccountController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<AccountDTO> findById(@PathVariable String id) {
-        AccountDTO accountDTO = accountService.findById(Long.valueOf(id));
+        AccountDTO accountDTO = accountService.findById(new BigInteger(id));
         return ResponseEntity.ok().body(accountDTO);
     }
 }

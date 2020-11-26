@@ -1,9 +1,9 @@
 package com.imeira.account.transaction.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 @Builder
 @AllArgsConstructor
@@ -12,8 +12,7 @@ import java.io.Serializable;
 @Setter
 public class OperationTypeDTO implements Serializable {
 
-  @JsonIgnore
-  private Long id;
+  private BigInteger id;
 
   private String description;
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 @Builder
 @AllArgsConstructor
@@ -12,7 +13,7 @@ import java.io.Serializable;
 @Setter
 public class AccountDTO implements Serializable {
 
-  private Long id;
+  private BigInteger id;
 
   @JsonProperty("document_number")
   private String documentNumber;

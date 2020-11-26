@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 @Configuration
@@ -29,7 +30,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
 
-        //cleanTables();
+        cleanTables();
         insertTables();
 
     }
@@ -43,30 +44,30 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private void insertTables() {
 
         //create accounts
-        Account account = new Account(1L, "12345678900");
+        Account account = new Account(BigInteger.valueOf(1), "12345678900");
         accountService.createIfNotFound(account);
-        Account account2 = new Account(2L, "82532303549");
+        Account account2 = new Account(BigInteger.valueOf(2), "82532303549");
         accountService.createIfNotFound(account2);
 
         //create operationTypes
-        OperationType operationTypeCash = new OperationType(1L, "COMPRA A VISTA", true);
+        OperationType operationTypeCash = new OperationType(BigInteger.valueOf(1), "COMPRA A VISTA", true);
         operationTypeService.createIfNotFound(operationTypeCash);
-        OperationType operationTypeInstallments = new OperationType(2L, "COMPRA PARCELADA", true);
+        OperationType operationTypeInstallments = new OperationType(BigInteger.valueOf(2), "COMPRA PARCELADA", true);
         operationTypeService.createIfNotFound(operationTypeInstallments);
-        OperationType operationTypeWithdraw = new OperationType(3L, "SAQUE", true);
+        OperationType operationTypeWithdraw = new OperationType(BigInteger.valueOf(3), "SAQUE", true);
         operationTypeService.createIfNotFound(operationTypeWithdraw);
-        OperationType operationTypePayment = new OperationType(4L, "PAGAMENTO", false);
+        OperationType operationTypePayment = new OperationType(BigInteger.valueOf(4), "PAGAMENTO", false);
         operationTypeService.createIfNotFound(operationTypePayment);
 
         //create transactions
         transactionService.createIfNotFound(Transaction.builder()
-                            .id(1L)
+                            .id(BigInteger.valueOf(1))
                             .account(account)
                             .operationType(operationTypeCash)
                             .amount(BigDecimal.valueOf(1000.50))
                             .eventDate(LocalDateTime.now()).build());
         transactionService.createIfNotFound((Transaction.builder()
-                .id(2L)
+                .id(BigInteger.valueOf(2))
                 .account(account2)
                 .operationType(operationTypePayment)
                 .amount(BigDecimal.valueOf(57853.50))

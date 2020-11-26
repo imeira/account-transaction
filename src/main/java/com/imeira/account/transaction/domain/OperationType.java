@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 @Document
 @Builder
@@ -15,7 +16,7 @@ import java.io.Serializable;
 public class OperationType implements Serializable {
 
   @Id
-  private Long id;
+  private BigInteger id;
 
   private String description;
 

@@ -8,6 +8,7 @@ import com.imeira.account.transaction.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class TransactionService {
         transactionRepository.deleteAll();
     }
 
-    public TransactionDTO findById(Long id) {
+    public TransactionDTO findById(BigInteger id) {
         Optional<Transaction> transaction = transactionRepository.findById(id);
         return transaction.map(this::fromEntity).orElse(null);
     }

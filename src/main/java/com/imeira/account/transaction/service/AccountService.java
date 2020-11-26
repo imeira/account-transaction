@@ -6,6 +6,7 @@ import com.imeira.account.transaction.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,14 +17,14 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public  AccountDTO findById(Long id) {
+    public  AccountDTO findById(BigInteger id) {
         Optional<Account> account = accountRepository.findById(id);
         return account.map(this::fromEntity).orElse(null);
     }
 
     public Account createIfNotFound(Account account) {
         Optional<Account> obj = accountRepository.findByDocumentNumber(account.getDocumentNumber());
-        return obj.orElseGet(() -> accountRepository.save(account));
+        return  obj.orElseGet(() -> accountRepository.save(account));
     }
 
     public void deleteAll() {

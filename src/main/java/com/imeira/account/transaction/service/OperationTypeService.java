@@ -6,6 +6,7 @@ import com.imeira.account.transaction.repository.OperationTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ public class OperationTypeService {
         operationTypeRepository.deleteAll();
     }
 
-    public OperationTypeDTO findById(Long id) {
+    public OperationTypeDTO findById(BigInteger id) {
         Optional<OperationType> operationType = operationTypeRepository.findById(id);
         return operationType.map(this::fromEntity).orElse(null);
     }
