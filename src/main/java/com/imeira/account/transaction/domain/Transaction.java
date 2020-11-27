@@ -31,4 +31,6 @@ public final class Transaction implements Serializable {
 
   private LocalDateTime eventDate;
 
+  private BigDecimal balance;
+
 }

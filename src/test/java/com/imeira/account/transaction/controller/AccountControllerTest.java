@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -30,15 +31,15 @@ class AccountControllerTest {
 
     @Test
     void testCreate() {
-        when(accountService.create(any())).thenReturn(new AccountDTO(BigInteger.valueOf(1), "documentNumber"));
+        when(accountService.create(any())).thenReturn(new AccountDTO(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000)));
 
-        ResponseEntity<AccountDTO> result = accountController.create(new AccountDTO(BigInteger.valueOf(1), "documentNumber"));
+        ResponseEntity<AccountDTO> result = accountController.create(new AccountDTO(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000)));
         Assertions.assertEquals(ResponseEntity.status(HttpStatus.OK).build().getStatusCode(), result.getStatusCode());
     }
 
     @Test
     void testFindAll() {
-        when(accountService.findAll()).thenReturn(Arrays.<AccountDTO>asList(new AccountDTO(BigInteger.valueOf(1), "documentNumber")));
+        when(accountService.findAll()).thenReturn(Arrays.<AccountDTO>asList(new AccountDTO(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000))));
 
         ResponseEntity<List<AccountDTO>> result = accountController.findAll();
         Assertions.assertEquals(ResponseEntity.status(HttpStatus.OK).build().getStatusCode(), result.getStatusCode());
@@ -46,7 +47,7 @@ class AccountControllerTest {
 
     @Test
     void testFindById() {
-        when(accountService.findById(any())).thenReturn(new AccountDTO(BigInteger.valueOf(1), "documentNumber"));
+        when(accountService.findById(any())).thenReturn(new AccountDTO(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000)));
 
         ResponseEntity<AccountDTO> result = accountController.findById("1");
         Assertions.assertEquals(ResponseEntity.status(HttpStatus.OK).build().getStatusCode(), result.getStatusCode());

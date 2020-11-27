@@ -1,6 +1,7 @@
 package com.imeira.account.transaction.dto;
 
 //import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -30,4 +31,8 @@ public class TransactionDTO implements Serializable {
 
   @JsonProperty("event_date")
   private LocalDateTime eventDate;
+
+  @JsonIgnore
+  private BigDecimal balance;
+
 }

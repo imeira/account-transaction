@@ -2,7 +2,6 @@ package com.imeira.account.transaction.config;
 
 import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.domain.OperationType;
-import com.imeira.account.transaction.domain.Transaction;
 import com.imeira.account.transaction.service.AccountService;
 import com.imeira.account.transaction.service.OperationTypeService;
 import com.imeira.account.transaction.service.TransactionService;
@@ -13,7 +12,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 
 @Configuration
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
@@ -38,15 +36,15 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private void cleanTables() {
         accountService.deleteAll();
         operationTypeService.deleteAll();
-        transactionService.deleteAll();
+//        transactionService.deleteAll();
     }
 
     private void insertTables() {
 
         //create accounts
-        Account account = new Account(BigInteger.valueOf(1), "12345678900");
+        Account account = new Account(BigInteger.valueOf(1), "12345678900", BigDecimal.valueOf(1000));
         accountService.createIfNotFound(account);
-        Account account2 = new Account(BigInteger.valueOf(2), "82532303549");
+        Account account2 = new Account(BigInteger.valueOf(2), "82532303549", BigDecimal.valueOf(100));
         accountService.createIfNotFound(account2);
 
         //create operationTypes
@@ -60,7 +58,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         operationTypeService.createIfNotFound(operationTypePayment);
 
         //create transactions
-        transactionService.createIfNotFound(Transaction.builder()
+       /* transactionService.createIfNotFound(Transaction.builder()
                             .id(BigInteger.valueOf(1))
                             .account(account)
                             .operationType(operationTypeCash)
@@ -71,7 +69,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
                 .account(account2)
                 .operationType(operationTypePayment)
                 .amount(BigDecimal.valueOf(57853.50))
-                .eventDate(LocalDateTime.now()).build()));
+                .eventDate(LocalDateTime.now()).build()));*/
     }
 
 

@@ -3,6 +3,7 @@ package com.imeira.account.transaction.service;
 import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.domain.OperationType;
 import com.imeira.account.transaction.domain.Transaction;
+import com.imeira.account.transaction.dto.AccountDTO;
 import com.imeira.account.transaction.dto.OperationTypeDTO;
 import com.imeira.account.transaction.dto.TransactionDTO;
 import com.imeira.account.transaction.repository.TransactionRepository;
@@ -61,15 +62,16 @@ public class TransactionService {
     public TransactionDTO create(TransactionDTO transactionDTO) {
 
         try {
-
-            Objects.requireNonNull(accountService.findById(transactionDTO.getAccountId()), String.format("Conta inválida!"));
+            AccountDTO accountDTO = accountService.findById(transactionDTO.getAccountId());
+            Objects.requireNonNull(accountDTO, String.format("Conta inválida!"));
             Objects.requireNonNull(transactionDTO.getAmount(), String.format("Amount inválido!"));
 
             OperationTypeDTO operationTypeDTO = operationTypeService.findById(transactionDTO.getOperationTypeId());
             Objects.requireNonNull(operationTypeDTO, String.format("Tipo de operação inválida!"));
-            if (operationTypeDTO.isNegative()) {
-                transactionDTO.setAmount(transactionDTO.getAmount().multiply(BigDecimal.valueOf(-1)));
-            }
+
+            calculateValues(transactionDTO, operationTypeDTO);
+
+            accountService.update(accountDTO, transactionDTO);
             
             transactionDTO = fromEntity(transactionRepository.save(fromDTO(transactionDTO)));
 
@@ -79,6 +81,19 @@ public class TransactionService {
         return transactionDTO;
     }
 
+    public void calculateValues(TransactionDTO transactionDTO, OperationTypeDTO operationTypeDTO) {
+        if (operationTypeDTO.isNegative()) {
+            transactionDTO.setAmount(transactionDTO.getAmount().multiply(BigDecimal.valueOf(-1)));
+            transactionDTO.setBalance(transactionDTO.getAmount());
+        } else {
+            List<TransactionDTO> transactionDTOS = find(Account.builder().id(transactionDTO.getAccountId()).build());
+            Double summingDouble = transactionDTOS.stream()
+                    .filter(t -> t.getBalance().doubleValue() > 0)
+                    .collect(Collectors.summingDouble(t -> t.getBalance().doubleValue()));
+
+            transactionDTO.setBalance(transactionDTO.getAmount().add(BigDecimal.valueOf(summingDouble)));
+        }
+    }
 
     public TransactionDTO fromEntity(Transaction transaction) {
         return TransactionDTO.builder()
@@ -86,6 +101,7 @@ public class TransactionService {
                 .accountId(transaction.getAccount().getId())
                 .operationTypeId(transaction.getOperationType().getId())
                 .amount(transaction.getAmount())
+                .balance(transaction.getBalance())
                 .eventDate(transaction.getEventDate()).build();
     }
 
@@ -96,18 +112,19 @@ public class TransactionService {
                 .account(Account.builder().id(transactionDTO.getAccountId()).build())
                 .operationType(OperationType.builder().id(transactionDTO.getAccountId()).build())
                 .amount(transactionDTO.getAmount())
+                .balance(transactionDTO.getBalance())
                 .eventDate(transactionDTO.getEventDate()).build();
     }
 
     public List<TransactionDTO> fromEntity(List<Transaction> transactions) {
         return transactions.stream()
-                .map(a -> new TransactionDTO(a.getId(), a.getAccount().getId(), a.getOperationType().getId(), a.getAmount(), a.getEventDate())
+                .map(a -> new TransactionDTO(a.getId(), a.getAccount().getId(), a.getOperationType().getId(), a.getAmount(), a.getEventDate(), a.getBalance())
         ).collect(Collectors.toList());
     }
 
     public List<Transaction> fromDTO (List<TransactionDTO> dtos) {
         return dtos.stream().map(
-                a -> new Transaction(a.getId(), Account.builder().id(a.getAccountId()).build(), OperationType.builder().id(a.getAccountId()).build(), a.getAmount(), a.getEventDate())
+                a -> new Transaction(a.getId(), Account.builder().id(a.getAccountId()).build(), OperationType.builder().id(a.getAccountId()).build(), a.getAmount(), a.getEventDate(), a.getBalance())
         ).collect(Collectors.toList());
     }
 

@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +43,7 @@ class AccountServiceTest {
     void testCreateIfNotFound() {
         when(accountRepository.findByDocumentNumber(anyString())).thenReturn(Optional.of(new Account()));
 
-        Account result = accountService.createIfNotFound(new Account(BigInteger.valueOf(1), "documentNumber"));
+        Account result = accountService.createIfNotFound(new Account(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000)));
         Assertions.assertNotNull(result);
     }
 
@@ -59,33 +60,33 @@ class AccountServiceTest {
 
     @Test
     void testCreate() {
-        when(accountRepository.save(any())).thenReturn(new Account(BigInteger.valueOf(1), "documentNumber"));
+        when(accountRepository.save(any())).thenReturn(new Account(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000)));
 
-        AccountDTO result = accountService.create(new AccountDTO(BigInteger.valueOf(1), "documentNumber"));
+        AccountDTO result = accountService.create(new AccountDTO(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000)));
         Assertions.assertNotNull(result);
     }
 
     @Test
     void testFromEntity() {
-        AccountDTO result = accountService.fromEntity(new Account(BigInteger.valueOf(1), "documentNumber"));
+        AccountDTO result = accountService.fromEntity(new Account(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000)));
         Assertions.assertNotNull(result);
     }
 
     @Test
     void testFromDTO() {
-        Account result = accountService.fromDTO(new AccountDTO(BigInteger.valueOf(1), "documentNumber"));
+        Account result = accountService.fromDTO(new AccountDTO(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000)));
         Assertions.assertNotNull(result);
     }
 
     @Test
     void testFromEntity2() {
-        List<AccountDTO> result = accountService.fromEntity(Arrays.<Account>asList(new Account(BigInteger.valueOf(1), "documentNumber")));
+        List<AccountDTO> result = accountService.fromEntity(Arrays.<Account>asList(new Account(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000))));
         Assertions.assertNotNull(result);
     }
 
     @Test
     void testFromDTO2() {
-        List<Account> result = accountService.fromDTO(Arrays.<AccountDTO>asList(new AccountDTO(BigInteger.valueOf(1), "documentNumber")));
+        List<Account> result = accountService.fromDTO(Arrays.<AccountDTO>asList(new AccountDTO(BigInteger.valueOf(1), "documentNumber", BigDecimal.valueOf(1000))));
         Assertions.assertNotNull(result);
     }
 }

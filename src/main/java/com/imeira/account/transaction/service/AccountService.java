@@ -2,14 +2,18 @@ package com.imeira.account.transaction.service;
 
 import com.imeira.account.transaction.domain.Account;
 import com.imeira.account.transaction.dto.AccountDTO;
+import com.imeira.account.transaction.dto.TransactionDTO;
 import com.imeira.account.transaction.repository.AccountRepository;
+import com.imeira.account.transaction.service.exception.InvalidTransactionException;
 import com.imeira.account.transaction.service.exception.ObjectAlreadyExistException;
 import com.imeira.account.transaction.service.exception.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,10 +51,23 @@ public class AccountService {
         return fromEntity(accountRepository.save(fromDTO(accountDTO)));
     }
 
+    public AccountDTO update(AccountDTO accountDTO, TransactionDTO transactionDTO) {
+        Objects.requireNonNull(accountDTO, String.format("Conta inválida!"));
+
+        BigDecimal diff = accountDTO.getAvailableCreditLimit().add(transactionDTO.getAmount());
+        if (diff.doubleValue() < 0) {
+            throw new InvalidTransactionException("Limite de credito indisponivel");
+        }
+        accountDTO.setAvailableCreditLimit(diff);
+
+        return fromEntity(accountRepository.save(fromDTO(accountDTO)));
+    }
+
     public AccountDTO fromEntity(Account account) {
         return AccountDTO.builder()
                 .id(account.getId())
                 .documentNumber(account.getDocumentNumber())
+                .availableCreditLimit(account.getAvailableCreditLimit())
                 .build();
     }
 
@@ -58,18 +75,19 @@ public class AccountService {
         return Account.builder()
                 .id(accountDTO.getId())
                 .documentNumber(accountDTO.getDocumentNumber())
+                .availableCreditLimit(accountDTO.getAvailableCreditLimit())
                 .build();
     }
 
     public List<AccountDTO> fromEntity(List<Account> account) {
         return account.stream()
-                .map(a -> new AccountDTO(a.getId(), a.getDocumentNumber())
+                .map(a -> new AccountDTO(a.getId(), a.getDocumentNumber(), a.getAvailableCreditLimit())
         ).collect(Collectors.toList());
     }
 
     public List<Account> fromDTO (List<AccountDTO> accountDTO) {
         return accountDTO.stream().map(
-                a -> new Account(a.getId(), a.getDocumentNumber())
+                a -> new Account(a.getId(), a.getDocumentNumber(), a.getAvailableCreditLimit())
         ).collect(Collectors.toList());
     }
 
